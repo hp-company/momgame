@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+*.tsbuildinfo
+
+# tooling caches
+.vite/
+.cache/
+
+# local env
+.env
+.env.*
+!.env.example
+
+# packaging / deploy scratch
+*.zip
+*.tar.gz
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# logs
+*.log
+npm-debug.log*

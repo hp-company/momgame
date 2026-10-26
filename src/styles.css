@@ -1,0 +1,547 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+:root {
+  --ink: #5a4a63;
+  --ink-soft: #8c7a94;
+  --pink: #ffb3d1;
+  --pink-deep: #ff7fb4;
+  --lavender: #c9b6ff;
+  --mint: #a8e6cf;
+  --sky: #a7d8ff;
+  --yellow: #ffe27a;
+  --cream: #fff8fb;
+  color-scheme: light;
+  font-family: Jua, 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--cream);
+}
+
+.app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.cam {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 2px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.stage[data-on='true'] {
+  opacity: 1;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  overflow-y: auto;
+  background:
+    radial-gradient(900px 620px at 12% 8%, rgba(255, 179, 209, 0.5), transparent 62%),
+    radial-gradient(800px 560px at 88% 14%, rgba(201, 182, 255, 0.45), transparent 62%),
+    radial-gradient(900px 700px at 50% 100%, rgba(168, 230, 207, 0.45), transparent 60%),
+    var(--cream);
+}
+
+.home {
+  justify-content: center;
+  padding-top: max(24px, env(safe-area-inset-top));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  gap: 12px;
+}
+
+/* 내용이 화면보다 길면 위가 잘리지 않고 그대로 스크롤된다. */
+@supports (justify-content: safe center) {
+  .home {
+    justify-content: safe center;
+  }
+}
+
+/* 화면이 낮으면(폰 세로) 위에서부터 스크롤되게 한다. */
+@media (max-width: 620px), (max-height: 780px) {
+  .home {
+    justify-content: flex-start;
+    padding-top: max(18px, env(safe-area-inset-top));
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.brand-emoji {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 22px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  font-size: 36px;
+  box-shadow: 0 5px 0 rgba(90, 74, 99, 0.9);
+  transform: rotate(-4deg);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(32px, 6.4vw, 50px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.brand p {
+  margin: 3px 0 0;
+  font-size: clamp(16px, 2.4vw, 20px);
+  color: var(--ink-soft);
+  font-family: Jua, sans-serif;
+}
+
+.sub {
+  margin: 0;
+  font-size: clamp(17px, 2.4vw, 21px);
+  color: var(--ink-soft);
+}
+
+.seg {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2.5px solid var(--ink);
+  box-shadow: 0 4px 0 rgba(90, 74, 99, 0.75);
+}
+
+.seg button {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 24px;
+  font: inherit;
+  font-size: 17px;
+  color: var(--ink-soft);
+  background: transparent;
+  cursor: pointer;
+}
+
+.seg button[aria-checked='true'] {
+  background: var(--pink);
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 rgba(90, 74, 99, 0.2);
+}
+
+.games {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  width: min(1040px, 100%);
+  padding: 0;
+  margin: 8px 0 0;
+  list-style: none;
+}
+
+.games li {
+  flex: 1 1 140px;
+  max-width: 200px;
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .games li {
+    flex: 1 1 150px;
+  }
+}
+
+@media (max-width: 620px) {
+  .games {
+    gap: 12px;
+  }
+
+  .games li {
+    flex: 1 1 calc(50% - 7px);
+    max-width: calc(50% - 7px);
+  }
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 16px 10px 14px;
+  border-radius: 24px;
+  border: 3px solid rgba(90, 74, 99, 0.9);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(90, 74, 99, 0.25);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.card:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 rgba(90, 74, 99, 0.25);
+}
+
+.card.on {
+  background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--accent) 35%, #fff));
+  box-shadow: 0 6px 0 rgba(90, 74, 99, 0.35), 0 0 0 5px color-mix(in srgb, var(--accent) 55%, transparent);
+  transform: translateY(-2px);
+}
+
+.card-emoji {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--accent) 55%, #fff);
+  border: 2.5px solid rgba(90, 74, 99, 0.85);
+  font-size: 38px;
+  margin-bottom: 2px;
+}
+
+.card strong {
+  font-size: 20px;
+  font-weight: 400;
+  word-break: keep-all;
+}
+
+.card small {
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  font-family: Jua, sans-serif;
+  min-height: 2.7em;
+  word-break: keep-all;
+}
+
+.card em {
+  font-style: normal;
+  font-size: 12.5px;
+  padding: 3px 11px;
+  border-radius: 999px;
+  background: rgba(90, 74, 99, 0.08);
+  color: var(--ink-soft);
+}
+
+.card-check {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+}
+
+.locked {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0;
+  margin: 2px 0 0;
+  list-style: none;
+}
+
+.locked li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 2px dashed rgba(90, 74, 99, 0.28);
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  opacity: 0.85;
+}
+
+.locked li em {
+  font-style: normal;
+  font-size: 11.5px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(90, 74, 99, 0.1);
+}
+
+.primary {
+  margin-top: 4px;
+  border: 3px solid var(--ink);
+  border-radius: 22px;
+  padding: 16px 52px;
+  font: inherit;
+  font-size: 24px;
+  color: #fff;
+  background: linear-gradient(180deg, #ff9dc4, #ff6fa8);
+  box-shadow: 0 6px 0 #d94f87;
+  cursor: pointer;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.primary:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #d94f87;
+}
+
+.ghost {
+  border: 2.5px solid rgba(90, 74, 99, 0.35);
+  border-radius: 16px;
+  padding: 11px 26px;
+  font: inherit;
+  font-size: 17px;
+  color: var(--ink-soft);
+  background: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+}
+
+.note {
+  max-width: 44ch;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  font-family: Jua, sans-serif;
+}
+
+.error {
+  margin: 0;
+  max-width: 42ch;
+  padding: 11px 15px;
+  border-radius: 14px;
+  background: #ffe3ea;
+  border: 2px solid #ff9db5;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.ribbon {
+  margin: 0;
+  padding: 7px 20px;
+  border-radius: 999px;
+  background: var(--yellow);
+  border: 2.5px solid var(--ink);
+  font-size: 16px;
+  box-shadow: 0 3px 0 rgba(90, 74, 99, 0.6);
+}
+
+.result-title {
+  font-size: clamp(30px, 7vw, 52px);
+}
+
+.scores {
+  display: flex;
+  gap: 16px;
+  margin: 6px 0;
+}
+
+.scores div {
+  display: grid;
+  gap: 2px;
+  min-width: 110px;
+  padding: 14px 22px;
+  border-radius: 22px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  box-shadow: 0 5px 0 rgba(90, 74, 99, 0.28);
+}
+
+.scores span {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.scores strong {
+  font-size: 44px;
+  line-height: 1;
+}
+
+.scores em {
+  font-style: normal;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.ingame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.chip {
+  position: absolute;
+  margin: 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 2.5px solid var(--ink);
+  font: inherit;
+  font-size: 17px;
+  color: var(--ink);
+  box-shadow: 0 3px 0 rgba(90, 74, 99, 0.4);
+  pointer-events: auto;
+}
+
+.chip.back {
+  left: 14px;
+  top: max(14px, env(safe-area-inset-top));
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.chip.title {
+  left: 50%;
+  top: max(16px, env(safe-area-inset-top));
+  transform: translateX(-50%);
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.dots {
+  display: flex;
+  gap: 10px;
+}
+
+.dots i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--pink-deep);
+  opacity: 0.35;
+  animation: dot 1s infinite ease-in-out;
+}
+
+.dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dot {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+.badge {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(90, 74, 99, 0.08);
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-family: ui-monospace, monospace;
+}
+
+/* 폰 세로: 카드와 글자를 조금 줄여 한 화면에 가깝게 */
+@media (max-width: 620px) {
+  .brand-emoji {
+    width: 56px;
+    height: 56px;
+    font-size: 30px;
+    border-radius: 18px;
+  }
+
+  .card {
+    padding: 12px 8px 10px;
+    gap: 4px;
+  }
+
+  .card-emoji {
+    width: 56px;
+    height: 56px;
+    font-size: 31px;
+    border-radius: 18px;
+  }
+
+  .card strong {
+    font-size: 19px;
+  }
+
+  .card small {
+    font-size: 14px;
+  }
+
+  .note {
+    font-size: 14.5px;
+  }
+}
+
+/* 시작 버튼은 스크롤해도 아래에 붙어 있게 (모든 화면 크기) */
+.cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: calc(100% + 40px);
+  margin: 2px -20px 0;
+  padding: 16px 20px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 248, 251, 0) 0%,
+    rgba(255, 248, 251, 0.96) 26%,
+    rgba(255, 248, 251, 1) 60%
+  );
+  backdrop-filter: blur(6px);
+}

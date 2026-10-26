@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+# MediaPipe 모델/WASM은 바이너리라 변환하지 않는다.
+*.wasm binary
+*.task binary
+*.png binary
+*.jpg binary
+*.ico binary
