@@ -38,6 +38,36 @@ npm run build      # dist/ 정적 빌드
 - 태블릿/폰에서 테스트하려면 같은 Wi-Fi의 `http://<PC IP>:5173` 은 **카메라가 막힌다.**
   → Cloudflare Tunnel / ngrok 같은 HTTPS 터널을 쓰거나 정적 호스팅에 올려서 테스트.
 
+## 배포
+
+### GitHub Pages (무료, HTTPS)
+
+`main` 에 push 하면 `.github/workflows/pages.yml` 이 빌드해서
+`https://<owner>.github.io/momgame/` 에 올린다.
+
+- 저장소 **Settings → Pages → Build and deployment → Source: GitHub Actions** 로 한 번만 바꿔 두면 된다.
+- 프로젝트 페이지라서 `VITE_BASE=/momgame/` 으로 빌드한다. (저장소 이름을 바꾸면 워크플로의 값도 바꿀 것)
+- 모델/WASM을 `public/` 에서 self-host 하므로 첫 방문에 ~45MB를 받는다.
+
+### 내 서버 (Docker)
+
+정적 사이트라서 `dist/` 만 nginx로 서빙하면 된다. 카메라 때문에 **HTTPS 필수**.
+
+```dockerfile
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+```
+
+nginx에서는 `try_files $uri /index.html;`, `application/wasm` MIME, gzip을 켠다.
+HTTPS는 앞단의 Caddy/Nginx Proxy Manager/Cloudflare Tunnel이 담당하게 한다.
+
 ## 개발용 모드
 
 | URL | 동작 |

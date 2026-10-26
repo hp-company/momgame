@@ -13,12 +13,14 @@ export type PoseEngine = {
  * 모델과 WASM은 public/ 에서 self-host 하므로 오프라인에서도 동작한다.
  */
 export async function createPoseEngine(opts?: { numPoses?: number }): Promise<PoseEngine> {
-  const fileset = await FilesetResolver.forVisionTasks('/wasm');
+  // 하위 경로(/momgame/) 배포에서도 모델/WASM을 찾도록 BASE_URL 을 붙인다.
+  const base = import.meta.env.BASE_URL;
+  const fileset = await FilesetResolver.forVisionTasks(`${base}wasm`);
 
   const build = async (delegate: 'GPU' | 'CPU') =>
     PoseLandmarker.createFromOptions(fileset, {
       baseOptions: {
-        modelAssetPath: '/models/pose_landmarker_lite.task',
+        modelAssetPath: `${base}models/pose_landmarker_lite.task`,
         delegate,
       },
       runningMode: 'VIDEO',
