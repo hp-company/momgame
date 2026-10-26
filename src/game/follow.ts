@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, PASTELS, Particles, heartPath, starPath } from './art';
 import { BaseGame, type Hand } from './types';
@@ -81,6 +82,7 @@ export class FollowGame extends BaseGame {
   private collect(player: number, t: Target) {
     this.scores[player] += 1;
     this.hits[player] += 1;
+    sfx('sparkle');
     this.particles.burst(t.x, t.y, t.color, 12, ['heart', 'star', 'dot']);
     this.particles.ring(t.x, t.y, C.white, t.r * 0.8);
     this.targets[player] = null;
@@ -90,6 +92,7 @@ export class FollowGame extends BaseGame {
     if (this.hits[player] % 6 === 0) {
       this.levels[player] += 1;
       this.scores[player] += 2;
+      sfx('chime');
     }
   }
 

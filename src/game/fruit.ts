@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, PASTELS, Particles, face } from './art';
 import { BaseGame, type Hand } from './types';
@@ -107,14 +108,17 @@ export class FruitGame extends BaseGame {
         if (it.kind === 'fruit') {
           this.scores[it.player] += 1;
           this.caught[it.player] += 1;
+          sfx('catch');
           this.particles.burst(it.x, it.y, it.color, 9, ['heart', 'star', 'dot']);
           this.particles.ring(it.x, it.y, C.white, 14);
           if (this.caught[it.player] % 10 === 0) {
             this.levels[it.player] += 1;
             this.scores[it.player] += 2;
+            sfx('chime');
           }
         } else {
           this.stun[it.player] = 0.55;
+          sfx('buzz');
           this.particles.burst(it.x, it.y, '#ffd95e', 8, ['dot']);
         }
         it.y = Infinity;

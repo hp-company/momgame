@@ -26,6 +26,16 @@
 - 카메라 영상은 브라우저 안에서만 처리되고 전송·저장하지 않는다.
 - 아이디어 더 보기: `IDEAS.md`
 
+## 사운드
+
+음원 파일을 쓰지 않고 **Web Audio로 실시간 합성**한다(추가 용량 0바이트).
+
+- 효과음: 풍선 팝, 펀치, 유리 깨짐, 두더지 콕, 과일 받기, 벌/오답, 반짝임, 레벨업, 리듬 북 레인별 드럼, 마지막 3초 카운트다운, 결과 팡파르
+- 리듬 북만 102 BPM 배경 반주(킥·스네어·하이햇·베이스)를 `AudioContext.currentTime` 기반 lookahead 스케줄러로 재생
+- 우측 상단 🔊 버튼으로 끄고 켤 수 있고, 선택은 `localStorage`에 저장된다
+- 브라우저 자동재생 정책 때문에 **첫 터치/클릭 전에는 소리가 나지 않는다.** 첫 제스처에서 `AudioContext.resume()`을 호출해 잠금을 푼다
+- iOS는 기기 옆면의 무음 스위치가 켜져 있으면 Web Audio도 들리지 않는다
+
 ## 실행
 
 ```powershell
@@ -84,6 +94,9 @@ HTTPS는 앞단의 Caddy/Nginx Proxy Manager/Cloudflare Tunnel이 담당하게 �
 src/
   App.tsx               화면 상태(홈/로딩/플레이/결과) + 게임 루프 + 데모 포인터
   styles.css            파스텔 테마 (Jua)
+  audio/
+    sfx.ts              효과음 합성(AudioContext, 리미터, 음소거 저장)
+    music.ts            리듬 북 배경 반주 (lookahead 스케줄러)
   motion/
     camera.ts           getUserMedia (640×480, 30fps, 전면)
     pose.ts             PoseLandmarker 생성 (GPU→CPU 폴백)
@@ -122,7 +135,7 @@ public/
 
 1. 실제 기기에서 펀치 임계값·링 크기 튜닝 (`?debug=1`의 px/s 확인)
 2. 캘리브레이션 화면(관절 visibility 칩) + "몸이 안 보여요" 안내
-3. 새 게임 추가: `IDEAS.md`의 무지개 잇기 / 리듬 북 / 물고기 잡기
-4. 리듬 펀치(차트 JSON + Web Audio 스케줄러) — `PLAN.md` §4
+3. 새 게임 추가: `IDEAS.md`의 물고기 잡기 / 빨래 널기 / 거품 터뜨리기
+4. 리듬 북 차트 고정(노트를 곡 박자에 맞추기) — 지금은 랜덤 스폰
 5. PWA(manifest, 서비스워커, 오프라인 캐시)
 6. 인앱 브라우저 감지 → "크롬으로 열기" 탈출 UI

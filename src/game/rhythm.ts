@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, PASTELS, Particles, face, heartPath, roundRect, starPath } from './art';
 import { BaseGame, type Hand } from './types';
@@ -79,6 +80,7 @@ export class RhythmGame extends BaseGame {
       const f = this.field(n.player);
       if (n.y > this.hitY(n.player) + f.h * 0.16) {
         n.y = Infinity;
+        if (this.combo[n.player] > 0) sfx('miss');
         this.combo[n.player] = 0;
       }
     }
@@ -129,6 +131,8 @@ export class RhythmGame extends BaseGame {
     this.combo[player] += 1;
     this.hits[player] += 1;
     this.flash[player][lane] = 1;
+    sfx('drum', lane);
+    if (text === 'PERFECT') sfx('perfect');
 
     const x = this.laneX(player, lane);
     const y = this.hitY(player);
@@ -145,6 +149,7 @@ export class RhythmGame extends BaseGame {
     if (this.hits[player] % 12 === 0) {
       this.levels[player] += 1;
       this.scores[player] += 3;
+      sfx('chime');
     }
   }
 

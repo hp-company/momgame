@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, Particles, heartPath, roundRect } from './art';
 import { layoutBlocks, type Rect } from './board';
@@ -95,6 +96,7 @@ export class MemoryGame extends BaseGame {
       if (mine.length > 0 && mine.every((c) => c.matched)) {
         this.levels[p] += 1;
         this.scores[p] += 3;
+        sfx('chime');
         this.cards = this.cards.filter((c) => c.player !== p);
         this.deal(p);
         continue;
@@ -133,6 +135,7 @@ export class MemoryGame extends BaseGame {
     this.lastPoint[player] = { x, y };
     card.faceUp = true;
     card.pop = 0.28;
+    sfx('tap');
     this.lock[player] = 0.32;
     this.open[player].push(card.id);
 
@@ -145,12 +148,14 @@ export class MemoryGame extends BaseGame {
       a.pop = 0.4;
       b.pop = 0.4;
       this.scores[player] += 1;
+      sfx('sparkle');
       this.particles.burst(a.x + a.w / 2, a.y + a.h / 2, C.pinkDeep, 12, ['heart', 'star', 'dot']);
       this.particles.burst(b.x + b.w / 2, b.y + b.h / 2, C.yellow, 12, ['heart', 'star', 'dot']);
       this.particles.ring(a.x + a.w / 2, a.y + a.h / 2, C.white, a.w * 0.35);
       this.open[player] = [];
     } else {
       this.wrong[player] = 0.7;
+      sfx('buzz');
     }
   }
 

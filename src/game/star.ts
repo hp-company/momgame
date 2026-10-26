@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, PASTELS, Particles, face, starPath } from './art';
 import { BaseGame, type Hand } from './types';
@@ -64,6 +65,7 @@ export class StarGame extends BaseGame {
         s.hold += dt;
         if (s.hold >= 0.35) {
           this.scores[s.player] += 1;
+          sfx('sparkle');
           this.particles.burst(s.x, s.y, s.color, 10, ['star', 'heart', 'dot']);
           this.particles.ring(s.x, s.y, C.white, s.r * 0.6);
           this.respawn(s);

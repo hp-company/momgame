@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { isMuted, setMuted as setAudioMuted, sfx, unlockAudio } from './audio/sfx';
+import { startMusic, stopMusic } from './audio/music';
 import { openCamera, type Camera } from './motion/camera';
 import { createPoseEngine, type Pose, type PoseEngine } from './motion/pose';
 import {
@@ -52,6 +54,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [delegate, setDelegate] = useState('');
+  const [muted, setMuted] = useState(isMuted());
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -72,7 +75,34 @@ export default function App() {
 
   useEffect(() => teardown, []);
 
+  // 브라우저 자동재생 정책: 첫 제스처에서 AudioContext 를 깨워 둔다.
+  useEffect(() => {
+    const wake = () => unlockAudio();
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') unlockAudio();
+    };
+    window.addEventListener('pointerdown', wake, { passive: true });
+    window.addEventListener('keydown', wake);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('pointerdown', wake);
+      window.removeEventListener('keydown', wake);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, []);
+
+  const toggleSound = () => {
+    const next = !muted;
+    setMuted(next);
+    setAudioMuted(next);
+    if (!next) {
+      unlockAudio();
+      sfx('tap');
+    }
+  };
+
   const start = async (game: GameMeta = selected) => {
+    unlockAudio();
     setSelected(game);
     setError(null);
     setResult(null);
@@ -117,6 +147,9 @@ export default function App() {
     let h = canvas.clientHeight;
     const game = selected.create(players, w, h);
     gameRef.current = game;
+    // 리듬 북만 배경 반주를 깐다. 다른 게임은 효과음만.
+    if (selected.id === 'rhythm') startMusic();
+    else stopMusic();
     if (DEMO) (window as unknown as { __game?: MiniGame }).__game = game;
     const tracker = new PunchTracker();
     const scales = [new BodyScale(), new BodyScale()];
@@ -134,6 +167,7 @@ export default function App() {
     let fps = 0;
     let inferenceMs = 0;
     let stopped = false;
+    let lastTick = -1;
 
     const loop = () => {
       if (stopped) return;
@@ -212,6 +246,13 @@ export default function App() {
       for (const punch of punches) game.punch(punch);
       game.update(dt, hands);
 
+      // 마지막 3초 카운트다운
+      const sec = Math.ceil(game.timeLeft);
+      if (sec > 0 && sec <= 3 && sec !== lastTick) {
+        lastTick = sec;
+        sfx('tick');
+      }
+
       drawScene({ ctx, video: DEMO ? null : video, cover, w, h, game, poses, playerOfPose, hands, time });
 
       if (DEBUG || DEMO) {
@@ -231,6 +272,8 @@ export default function App() {
 
       if (game.done) {
         stopped = true;
+        stopMusic();
+        sfx('finish');
         if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
         setResult({
@@ -245,6 +288,7 @@ export default function App() {
     rafRef.current = requestAnimationFrame(loop);
     return () => {
       stopped = true;
+      stopMusic();
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     };
@@ -269,6 +313,18 @@ export default function App() {
         data-on={phase === 'playing'}
         onPointerMove={onPointerMove}
       />
+
+      {phase !== 'loading' && (
+        <button
+          type="button"
+          className="sound"
+          aria-pressed={muted}
+          aria-label={muted ? '소리 켜기' : '소리 끄기'}
+          onClick={toggleSound}
+        >
+          {muted ? '🔇' : '🔊'}
+        </button>
+      )}
 
       {phase === 'home' && (
         <section className="screen home">
@@ -296,7 +352,11 @@ export default function App() {
                   type="button"
                   className={`card${selected.id === g.id ? ' on' : ''}`}
                   style={{ ['--accent' as string]: g.accent }}
-                  onClick={() => setSelected(g)}
+                  onClick={() => {
+                    unlockAudio();
+                    sfx('tap');
+                    setSelected(g);
+                  }}
                 >
                   <span className="card-emoji">{g.emoji}</span>
                   <strong>{g.title}</strong>

@@ -445,6 +445,35 @@ h1 {
   white-space: nowrap;
 }
 
+/* 소리 켜기/끄기 — 홈과 게임 화면 모두에서 같은 자리 */
+.sound {
+  position: absolute;
+  z-index: 5;
+  right: 14px;
+  top: max(14px, env(safe-area-inset-top));
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 2.5px solid var(--ink);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 3px 0 rgba(90, 74, 99, 0.4);
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sound[aria-pressed='true'] {
+  opacity: 0.6;
+}
+
+.sound:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 rgba(90, 74, 99, 0.4);
+}
+
 .dots {
   display: flex;
   gap: 10px;

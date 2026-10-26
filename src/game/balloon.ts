@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, PASTELS, Particles, face, roundRect } from './art';
 import { BaseGame, type Hand } from './types';
@@ -65,6 +66,7 @@ export class BalloonGame extends BaseGame {
         const d = Math.hypot(hand.x - b.x, hand.y - b.y);
         if (d < b.r * 0.95) {
           this.scores[b.player] += 1;
+          sfx('pop');
           this.particles.burst(b.x, b.y, b.color, 12, ['heart', 'star', 'dot']);
           this.particles.ring(b.x, b.y, C.white, b.r * 0.5);
           const fresh = this.spawn(b.player);

@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, PASTELS, Particles, face, roundRect } from './art';
 import { layoutBlocks, type Rect } from './board';
@@ -84,16 +85,19 @@ export class IceGame extends BaseGame {
 
     target.damage += 1;
     target.wobble = 0.25;
+    sfx('punch');
 
     if (target.damage >= HITS_TO_BREAK) {
       target.broken = true;
       this.scores[target.player] += 1;
+      sfx('smash');
       this.particles.burst(target.x + target.w / 2, target.y + target.h / 2, target.color, 14, ['heart', 'star', 'dot']);
       this.particles.ring(target.x + target.w / 2, target.y + target.h / 2, C.white, target.w * 0.3);
       this.relayout(target.player);
       if (this.remaining(target.player) === 0) {
         this.levels[target.player] += 1;
         this.scores[target.player] += 3;
+        sfx('chime');
         this.blocks = this.blocks.filter((b) => b.player !== target.player);
         this.spawn(target.player);
       }

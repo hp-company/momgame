@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, Particles, face } from './art';
 import { BaseGame, type Hand } from './types';
@@ -120,6 +121,7 @@ export class DinoGame extends BaseGame {
     this.lock[player] = 0.22;
     this.scores[player] += 1;
     this.hits[player] += 1;
+    sfx('bonk');
 
     const cx = best.hole.x;
     const cy = this.headY(best);
@@ -129,6 +131,7 @@ export class DinoGame extends BaseGame {
     if (this.hits[player] % 10 === 0) {
       this.levels[player] += 1;
       this.scores[player] += 2;
+      sfx('chime');
       for (const m of this.moles) if (m.player === player) m.wait = Math.min(m.wait, 0.9);
     }
   }

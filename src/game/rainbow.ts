@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, Particles, face } from './art';
 import { BaseGame, type Hand } from './types';
@@ -98,6 +99,7 @@ export class RainbowGame extends BaseGame {
   private finish(player: number, round: Round) {
     this.scores[player] += 1;
     this.made[player] += 1;
+    sfx('rainbow');
     const mx = (round.a.x + round.b.x) / 2;
     const my = (round.a.y + round.b.y) / 2 - Math.abs(round.b.x - round.a.x) * 0.22;
     this.particles.burst(mx, my, C.pink, 14, ['heart', 'star', 'dot']);
@@ -109,6 +111,7 @@ export class RainbowGame extends BaseGame {
     if (this.made[player] % 5 === 0) {
       this.levels[player] += 1;
       this.scores[player] += 2;
+      sfx('chime');
     }
   }
 

@@ -1,3 +1,4 @@
+import { sfx } from '../audio/sfx';
 import type { Punch } from '../motion/punch';
 import { C, Particles, face, roundRect } from './art';
 import { BaseGame, type Hand } from './types';
@@ -38,11 +39,13 @@ export class HeliGame extends BaseGame {
           this.tick[p] = 0;
           this.scores[p] += 1;
           this.hit[p] += 1;
+          sfx('tick');
           const cy = f.y + f.h * (1 - this.alt[p]);
           this.particles.burst(f.x + f.w / 2, cy, C.yellow, 6, ['star', 'heart', 'dot']);
           if (this.hit[p] % 12 === 0) {
             this.levels[p] += 1;
             this.scores[p] += 3;
+            sfx('chime');
           }
         }
       } else {
